@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cartões Empilhados (estilo Vecteezy) → Abrem Lado a Lado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #000000; /* fundo preto */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* container principal */
+        .scene {
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* CÍRCULO AMARELO: contêiner principal que agrupa os cartões */
+        .yellow-circle {
+            position: relative;
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle at 35% 30%, #FFE066, #F5B700);
+            border-radius: 50%;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5), 0 0 0 8px rgba(255, 225, 100, 0.3), inset 0 2px 5px rgba(255,255,200,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* Efeito sutil no círculo durante hover */
+        .yellow-circle:hover {
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.7), 0 0 0 12px rgba(255, 215, 0, 0.5), inset 0 1px 4px rgba(255,255,210,0.9);
+        }
+
+        /* --- ESTILO DOS CARTÕES --- 
+           Inicialmente: empilhados exatamente como na imagem Vecteezy
+           (um em cima do outro, com leve inclinação e deslocamento lateral mínimo,
+           formando uma pilha uniforme de documentos/cartões)
+           Conteúdo invisível inicialmente (opacity: 0) */
+        .card {
+            position: absolute;
+            width: 180px;
+            height: 260px;
+            background: #FFFFFF; /* fundo branco puro */
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.04);
+            transition: all 0.55s cubic-bezier(0.2, 0.85, 0.4, 1.1);
+            cursor: default;
+            will-change: transform, box-shadow;
+            pointer-events: auto;
+            /* Centralização no círculo */
+            left: 50%;
+            top: 50%;
+            margin-left: -90px;
+            margin-top: -130px;
+            /* Conteúdo interno invisível inicialmente */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Wrapper do conteúdo que só aparece no hover */
+        .card-content {
+            opacity: 0;
+            transition: opacity 0.4s ease 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 20px 14px;
+        }
+
+        /* Estilos dos elementos que surgem no hover */
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 14px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #f8f9fc, #eef2f7);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            color: #e67e22;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin: 8px 0 6px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #1e2a3a;
+        }
+
+        .card p {
+            font-size: 0.75rem;
+            line-height: 1.45;
+            color: #4a5568;
+            margin-top: 6px;
+            font-weight: 400;
+            max-width: 90%;
+        }
+
+        /* --- POSIÇÃO INICIAL: CARTÕES EMPILHADOS (estilo Vecteezy / documentos empilhados) --- 
+           Todos os cartões compartilham o mesmo centro, com pequenas rotações e leves deslocamentos
+           para simular uma pilha uniforme de papéis/cartões, como na imagem de referência.
+           O efeito é de uma pilha organizada, onde cada cartão está levemente deslocado e rotacionado. */
+        .card-1 {
+            transform: translate(-8px, -12px) rotate(-8deg);
+            z-index: 3;
+        }
+        .card-2 {
+            transform: translate(5px, -6px) rotate(4deg);
+            z-index: 2;
+        }
+        .card-3 {
+            transform: translate(3px, 12px) rotate(12deg);
+            z-index: 1;
+        }
+
+        /* --- EFEITO HOVER: quando o mouse está sobre o círculo amarelo ---
+           OS CARTÕES FICAM NA VERTICAL, LADO A LADO (sem rotação, espaçados horizontalmente)
+           E AS ESCRITAS APARECEM. */
+        .yellow-circle:hover .card-1 {
+            transform: translate(-160px, 0px) rotate(0deg) scale(1);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 215, 0, 0.6);
+            z-index: 10;
+        }
+        .yellow-circle:hover .card-2 {
+            transform: translate(0px, 0px) rotate(0deg) scale(1);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 215, 0, 0.6);
+            z-index: 10;
+        }
+        .yellow-circle:hover .card-3 {
+            transform: translate(160px, 0px) rotate(0deg) scale(1);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 215, 0, 0.6);
+            z-index: 10;
+        }
+
+        /* Quando o círculo está em hover, o conteúdo interno dos cartões aparece */
+        .yellow-circle:hover .card-content {
+            opacity: 1;
+        }
+
+        /* Responsividade: ajustar tamanhos do círculo e cartões */
+        @media (max-width: 750px) {
+            .yellow-circle {
+                width: 420px;
+                height: 420px;
+            }
+            .card {
+                width: 150px;
+                height: 215px;
+                margin-left: -75px;
+                margin-top: -107.5px;
+            }
+            .card-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 2.4rem;
+            }
+            .card h3 {
+                font-size: 1rem;
+            }
+            .card p {
+                font-size: 0.65rem;
+            }
+            .card-content {
+                padding: 14px 10px;
+            }
+            .yellow-circle:hover .card-1 {
+                transform: translate(-130px, 0px) rotate(0deg) scale(1);
+            }
+            .yellow-circle:hover .card-2 {
+                transform: translate(0px, 0px) rotate(0deg) scale(1);
+            }
+            .yellow-circle:hover .card-3 {
+                transform: translate(130px, 0px) rotate(0deg) scale(1);
+            }
+            .card-1 {
+                transform: translate(-6px, -10px) rotate(-7deg);
+            }
+            .card-2 {
+                transform: translate(4px, -5px) rotate(3deg);
+            }
+            .card-3 {
+                transform: translate(3px, 10px) rotate(10deg);
+            }
+        }
+
+        @media (max-width: 530px) {
+            .yellow-circle {
+                width: 340px;
+                height: 340px;
+            }
+            .card {
+                width: 120px;
+                height: 175px;
+                margin-left: -60px;
+                margin-top: -87.5px;
+            }
+            .card-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 2rem;
+                margin-bottom: 8px;
+            }
+            .card h3 {
+                font-size: 0.85rem;
+            }
+            .card p {
+                font-size: 0.55rem;
+            }
+            .card-content {
+                padding: 10px 6px;
+            }
+            .yellow-circle:hover .card-1 {
+                transform: translate(-100px, 0px) rotate(0deg) scale(0.98);
+            }
+            .yellow-circle:hover .card-2 {
+                transform: translate(0px, 0px) rotate(0deg) scale(0.98);
+            }
+            .yellow-circle:hover .card-3 {
+                transform: translate(100px, 0px) rotate(0deg) scale(0.98);
+            }
+            .card-1 {
+                transform: translate(-5px, -8px) rotate(-6deg);
+            }
+            .card-2 {
+                transform: translate(3px, -4px) rotate(3deg);
+            }
+            .card-3 {
+                transform: translate(2px, 8px) rotate(9deg);
+            }
+        }
+
+        /* Texto descritivo abaixo do círculo */
+        .info-tip {
+            position: absolute;
+            bottom: -55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: max-content;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 6px 18px;
+            border-radius: 60px;
+            color: #ffdd88;
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,215,0,0.3);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .circle-wrapper {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+        }
+
+        /* Brilho adicional ao passar o mouse no círculo */
+        .yellow-circle:hover::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,220,80,0.3), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: pulseGlow 0.6s ease;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.2; transform: scale(0.96);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+
+        .card {
+            transition: transform 0.55s cubic-bezier(0.2, 0.85, 0.4, 1.1), box-shadow 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="scene">
+    <div class="circle-wrapper">
+        <div class="yellow-circle">
+            <!-- CARTÃO 1 - Topo da pilha -->
+            <div class="card card-1">
+                <div class="card-content">
+                    <div class="card-icon">🚀</div>
+                    <h3>Inovação</h3>
+                    <p>Tecnologia de ponta, circuitos e soluções futuristas.</p>
+                </div>
+            </div>
+            <!-- CARTÃO 2 - Meio da pilha -->
+            <div class="card card-2">
+                <div class="card-content">
+                    <div class="card-icon">⚡</div>
+                    <h3>Energia</h3>
+                    <p>Movimento, nós de circuito e performance minimalista.</p>
+                </div>
+            </div>
+            <!-- CARTÃO 3 - Fundo da pilha -->
+            <div class="card card-3">
+                <div class="card-content">
+                    <div class="card-icon">🔧</div>
+                    <h3>Precisão</h3>
+                    <p>Engenharia moderna, linhas de movimento e design.</p>
+                </div>
+            </div>
+        </div>
+        <div class="info-tip">✨ Passe o mouse sobre o círculo ✨</div>
+    </div>
+</div>
+
+<!-- Script para experiência mobile (touch) -->
+<script>
+    (function() {
+        const circle = document.querySelector('.yellow-circle');
+        if (!circle) return;
+
+        let touchActive = false;
+
+        const styleSheet = document.createElement("style");
+        styleSheet.textContent = `
+            .yellow-circle.hover-force .card-1 {
+                transform: translate(-160px, 0px) rotate(0deg) scale(1) !important;
+                box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 215, 0, 0.6) !important;
+                z-index: 10 !important;
+            }
+            .yellow-circle.hover-force .card-2 {
+                transform: translate(0px, 0px) rotate(0deg) scale(1) !important;
+                box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 215, 0, 0.6) !important;
+                z-index: 10 !important;
+            }
+            .yellow-circle.hover-force .card-3 {
+                transform: translate(160px, 0px) rotate(0deg) scale(1) !important;
+                box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 215, 0, 0.6) !important;
+                z-index: 10 !important;
+            }
+            .yellow-circle.hover-force .card-content {
+                opacity: 1 !important;
+            }
+            @media (max-width: 750px) {
+                .yellow-circle.hover-force .card-1 {
+                    transform: translate(-130px, 0px) rotate(0deg) scale(1) !important;
+                }
+                .yellow-circle.hover-force .card-2 {
+                    transform: translate(0px, 0px) rotate(0deg) scale(1) !important;
+                }
+                .yellow-circle.hover-force .card-3 {
+                    transform: translate(130px, 0px) rotate(0deg) scale(1) !important;
+                }
+            }
+            @media (max-width: 530px) {
+                .yellow-circle.hover-force .card-1 {
+                    transform: translate(-100px, 0px) rotate(0deg) scale(0.98) !important;
+                }
+                .yellow-circle.hover-force .card-2 {
+                    transform: translate(0px, 0px) rotate(0deg) scale(0.98) !important;
+                }
+                .yellow-circle.hover-force .card-3 {
+                    transform: translate(100px, 0px) rotate(0deg) scale(0.98) !important;
+                }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        function forceOpen() {
+            if (!circle.classList.contains('hover-force')) {
+                circle.classList.add('hover-force');
+            }
+        }
+
+        function forceClose() {
+            circle.classList.remove('hover-force');
+            touchActive = false;
+        }
+
+        circle.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (circle.classList.contains('hover-force')) {
+                forceClose();
+            } else {
+                forceOpen();
+                touchActive = true;
+            }
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            if (touchActive && !circle.contains(e.target)) {
+                forceClose();
+            }
+        });
+
+        circle.addEventListener('mouseenter', () => {
+            if (circle.classList.contains('hover-force')) {
+                forceClose();
+            }
+        });
+    })();
+</script>
+
+<!--
+    IMPLEMENTAÇÃO - CARTÕES EMPILHADOS (estilo Vecteezy / documentos empilhados):
+    
+    ✅ Fundo preto.
+    ✅ Círculo amarelo central.
+    ✅ Três cartões TOTALMENTE BRANCOS (sem escritas visíveis inicialmente).
+    
+    ✅ POSIÇÃO INICIAL: CARTÕES EMPILHADOS como na imagem de referência:
+       - Todos os cartões compartilham o centro do círculo
+       - Cada cartão tem pequenas rotações (-8deg, 4deg, 12deg) e leves deslocamentos
+       - Cria o efeito visual de uma pilha uniforme de documentos/cartões
+       - Exatamente como na imagem Vecteezy (ícone de documentos empilhados)
+    
+    ✅ Ao passar o MOUSE sobre o círculo (hover):
+       - Os cartões se MOVEM e ficam na VERTICAL (rotação 0deg)
+       - Ficam LADO A LADO (espaçados horizontalmente)
+       - As ESCRITAS APARECEM (ícone, título, descrição)
+       - Ganham destaque com borda dourada
+    
+    ✅ Responsivo: ajusta tamanhos e posições para tablets e celulares.
+    ✅ Suporte a toque (mobile).
+    ✅ Transições suaves e elegantes.
+-->
+</body>
+</html>
